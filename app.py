@@ -30,21 +30,13 @@ st.markdown("""
 def carregar_dados():
     try:
         nome_arquivo = "base de treinamentos (1).xlsx"
-        # 1. Carrega o Excel
+        
         tabs = pd.read_excel(nome_arquivo, sheet_name=None)
         
-        # 2. Pega a primeira aba disponível (já que só tem uma, não importa o nome)
         primeira_aba = list(tabs.keys())[0]
         df = tabs[primeira_aba]
-        
-        # 3. LIMPEZA CRÍTICA: Remove espaços extras dos nomes das colunas
-        # Isso resolve o erro se no Excel estiver "Setor " com um espaço no fim
         df.columns = [str(col).strip() for col in df.columns]
-        
-        # 4. Limpeza das matrículas
         df['Matrícula'] = df['Matrícula'].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
-        
-        # Retornamos o mesmo dataframe para ambos, já que os dados estão juntos
         return df, df
         
     except Exception as e:
@@ -103,7 +95,7 @@ with col_f3:
 # ─────────────────────────────────────────────
 st.markdown('<div class="training-card-title">🎓 Treinamentos do Colaborador</div>', unsafe_allow_html=True)
 
-treinamentos_selecionados = []   # lista de dicts com dados de cada treinamento selecionado
+treinamentos_selecionados = [] 
 
 if not matricula_input or not c_nome:
     st.info("💡 Preencha a matrícula e os dados do colaborador para ver os treinamentos disponíveis.")
@@ -115,12 +107,10 @@ else:
     if df_treinos_colab.empty:
         st.warning("Nenhum treinamento encontrado para esta matrícula.")
     else:
-        # Formata data para exibição
+        
         df_treinos_colab['Data Formatada'] = pd.to_datetime(
             df_treinos_colab['Data do Treinamento'], errors='coerce'
         ).dt.strftime('%d/%m/%Y')
-
-        # Cria label único para o multiselect
         df_treinos_colab['label'] = (
             df_treinos_colab['Código do Procedimento'].fillna('') + ' — ' +
             df_treinos_colab['Procedimento'].fillna('') + ' (' +
@@ -137,8 +127,6 @@ else:
 
         if selecao:
             st.markdown(f"**{len(selecao)} treinamento(s) selecionado(s)**")
-
-            # ── Para cada treinamento selecionado, permite editar inst/local e avaliador ──
             st.markdown("---")
             st.markdown("#### ✏️ Confirme os dados de cada treinamento selecionado")
             st.caption("Os campos abaixo são pré-preenchidos automaticamente. Edite se necessário.")
@@ -207,8 +195,6 @@ with col2:
                             't_local':   treino['t_local'],
                         }
                         doc.render(contexto)
-
-                        # Nome do arquivo dentro do ZIP (garante unicidade)
                         codigo_limpo = str(treino['t_codigo']).replace("/", "-").replace(" ", "_")
                         nome_base    = f"Eficacia_{c_nome}_{codigo_limpo}.docx"
                         if nome_base in nomes_usados:
