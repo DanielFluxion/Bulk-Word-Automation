@@ -20,7 +20,7 @@ st.markdown("""
 <div class="custom-header">
     <div class="header-content-wrapper">
         <span class="header-icon">📋</span>
-        <span class="header-title-text">Avaliação de Eficácia</span>
+        <span class="header-title-text">Avaliação de Treinamento</span>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -29,28 +29,29 @@ st.markdown("""
 @st.cache_data
 def carregar_dados():
     try:
-        import base64
-
-        # Tenta carregar do Streamlit Secrets (produção)
-        if "excel" in st.secrets and "data" in st.secrets["excel"]:
-            b64    = st.secrets["excel"]["data"]
-            buffer = io.BytesIO(base64.b64decode(b64))
-            tabs   = pd.read_excel(buffer, sheet_name=None)
-        else:
-            # Fallback: arquivo local (desenvolvimento)
-            tabs = pd.read_excel("base de treinamentos (1).xlsx", sheet_name=None)
-
-        df_c = tabs["Colaboradores"]
-        df_b = tabs["Base de Treinamentos"]
-        df_c['Matrícula'] = df_c['Matrícula'].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
-        df_b['Matrícula'] = df_b['Matrícula'].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
-        return df_c, df_b
+        nome_arquivo = "base de treinamentos (1).xlsx"
+        # 1. Carrega o Excel
+        tabs = pd.read_excel(nome_arquivo, sheet_name=None)
+        
+        # 2. Pega a primeira aba disponível (já que só tem uma, não importa o nome)
+        primeira_aba = list(tabs.keys())[0]
+        df = tabs[primeira_aba]
+        
+        # 3. LIMPEZA CRÍTICA: Remove espaços extras dos nomes das colunas
+        # Isso resolve o erro se no Excel estiver "Setor " com um espaço no fim
+        df.columns = [str(col).strip() for col in df.columns]
+        
+        # 4. Limpeza das matrículas
+        df['Matrícula'] = df['Matrícula'].astype(str).str.replace(r'\.0$', '', regex=True).str.strip()
+        
+        # Retornamos o mesmo dataframe para ambos, já que os dados estão juntos
+        return df, df
+        
     except Exception as e:
         st.error(f"Erro ao carregar Excel: {e}")
         return None, None
-
+    
 df_colaboradores, df_base = carregar_dados()
-
 # ─────────────────────────────────────────────
 # CARD 1 — COLABORADOR
 # ─────────────────────────────────────────────
