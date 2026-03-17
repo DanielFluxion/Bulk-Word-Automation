@@ -1,6 +1,6 @@
 # 🚀 Automação de Avaliação de Treinamentos (Bulk Word Automation)
 
-Este projeto é uma aplicação web interativa desenvolvida com **Python** e **Streamlit**. Ele resolve um problema comum de RH e Treinamento: a busca manual de dados em planilhas e o preenchimento repetitivo de formulários em Word.
+Este projeto é uma aplicação web interativa desenvolvida com **Python** e **Streamlit**. Ele resolve um problema comum no meio corporativo: a busca manual de dados em planilhas e o preenchimento repetitivo de formulários em Word.
 
 ## 📋 Funcionalidades
 - **Busca Inteligente:** Localiza dados de colaboradores (Nome, Cargo, Setor) instantaneamente através da Matrícula.
